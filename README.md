@@ -6,23 +6,21 @@ The entire application is self-contained in a single index.html file and runs en
 Live Demo: https://lbewlay.github.io/digital_resilience-assessment/
 
 ✨ Features
-20-Question Assessment: A comprehensive questionnaire organized into 7 key cybersecurity categories.
+- 20-Question Assessment: A comprehensive questionnaire organized into 7 key cybersecurity categories.
 
-Expert Explainers: Each question includes a non-technical explanation to help users understand its importance.
+- Expert Explainers: Each question includes a non-technical explanation to help users understand its importance.
 
-Weighted Scoring System: Implements a weighted scoring algorithm to accurately calculate a resilience score based on category importance.
+- Weighted Scoring System: Implements a weighted scoring algorithm to accurately calculate a resilience score based on category importance.
 
-3-Layer Classification: Classifies the organization's posture into Heart (Survival), Safety (Stability), or Resilience (Automation) layers.
+- 3-Layer Classification: Classifies the organization's posture into Heart (Survival), Safety (Stability), or Resilience (Automation) layers.
 
-Contextual Risk Adjustment: Automatically elevates risk levels for organizations operating in high-risk contexts.
+- Contextual Risk Adjustment: Automatically elevates risk levels for organizations operating in high-risk contexts.
 
-Personalized Recommendations: Generates immediate, short-term, and long-term action items based on assessment results.
+- Personalized Recommendations: Generates immediate, short-term, and long-term action items based on assessment results.
 
-Progress Persistence: Automatically saves progress to the browser's local storage, allowing users to "Save & Continue Later".
+- Progress Persistence: Automatically saves progress to the browser's local storage, allowing users to "Save & Continue Later".
 
-PDF Export: Users can export their complete results, including scores and recommendations, to a professionally formatted PDF report.
-
-Fully Responsive: A clean and modern UI that works seamlessly on desktop, tablet, and mobile devices.
+- PDF Export: Users can export their complete results, including scores and recommendations, to a professionally formatted PDF report.
 
 🚀 How to Use
 There are two ways to run this application:
@@ -38,15 +36,15 @@ Since this is a self-contained application, you can also run it directly from yo
 
 Download the file:
 
-Click the green <> Code button on this repository page.
+- Click the green <> Code button on this repository page.
 
-Select Download ZIP.
+- Select Download ZIP.
 
-Unzip the folder.
+- Unzip the folder.
 
 Open in Browser:
 
-Navigate to the downloaded folder and simply double-click the index.html file. It will open and run in your default web browser.
+- Navigate to the downloaded folder and simply double-click the index.html file. It will open and run in your default web browser.
 
 🛠️ Technology Stack
 Frontend: HTML5, CSS3, Vanilla JavaScript (ES6+)
