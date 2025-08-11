@@ -3,7 +3,7 @@ This is a web-based Digital Resilience Assessment application that implements th
 
 The entire application is self-contained in a single index.html file and runs entirely in the browser, requiring no backend or server-side processing.
 
-Live Demo: https://lbeway.github.io/digital_resilience-assessment/
+Live Demo: https://lbewlay.github.io/digital_resilience-assessment/
 
 ✨ Features
 20-Question Assessment: A comprehensive questionnaire organized into 7 key cybersecurity categories.
@@ -30,7 +30,7 @@ There are two ways to run this application:
 1. Via the Live Demo Link
 
 The easiest way is to use the live version hosted on GitHub Pages:
-https://lbeway.github.io/digital_resilience-assessment/
+https://lbewlay.github.io/digital_resilience-assessment/
 
 2. Running Locally
 
