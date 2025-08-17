@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Resilience Assessment</title>
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1 class="main-title">Digital Resilience Assessment</h1>
+
+        <!-- Landing Page View -->
+        <div id="landing-page" class="view">
+            <div class="card hero">
+                <p>Understand your organization's cybersecurity posture and get personalized recommendations for improvement based on the Resilience Maturity Model.</p>
+                <div class="btn-group">
+                    <button id="start-assessment-btn" class="btn btn-primary">Start New Assessment</button>
+                    <button id="resume-assessment-btn" class="btn btn-secondary" style="display: none;">Resume Assessment</button>
+                </div>
+            </div>
+            <div class="layers-intro">
+                 <div class="card layer-card heart">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    <h3>Heart Layer: Survival</h3>
+                    <p>Focuses on the essential, core capabilities needed to survive a basic cyber incident. Lacks foundational security controls.</p>
+                </div>
+                <div class="card layer-card safety">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+                    <h3>Safety Layer: Stability</h3>
+                    <p>Implements foundational security measures for stability and protection against common threats. Vulnerable to sophisticated attacks.</p>
+                </div>
+                <div class="card layer-card resilience">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 16c-3.86 0-7-3.14-7-7s3.14-7 7-7 7 3.14 7 7-3.14 7-7 7zm-1-11h2v6h-2zm0 8h2v2h-2z"/></svg>
+                    <h3>Resilience Layer: Automation</h3>
+                    <p>Achieves a mature, automated, and future-proofed security posture capable of withstanding advanced threats.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assessment View -->
+        <div id="assessment-page" class="view">
+            <div id="progress-container">
+                <div id="progress-bar"></div>
+            </div>
+            <div class="card">
+                <h2 id="question-category">Category</h2>
+                <div id="question-explainer">Explainer text goes here.</div>
+                <p id="question-text">Question text goes here.</p>
+                <div class="options-container" id="options-container"></div>
+                <p id="error-message">Please select an option to continue.</p>
+                <div id="context-section" style="display: none;">
+                    <h3>What is your organization's operational context?</h3>
+                    <p>Select all that apply. This helps tailor the risk assessment.</p>
+                    <div class="context-options" id="context-options-container"></div>
+                </div>
+                <div class="btn-group">
+                    <button id="save-continue-btn" class="btn btn-secondary">Save & Continue Later</button>
+                    <div class="navigation-buttons">
+                        <button id="prev-btn" class="btn btn-secondary">Previous</button>
+                        <button id="next-btn" class="btn btn-primary">Next</button>
+                        <button id="finish-btn" class="btn btn-primary" style="display: none;">Finish Assessment</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results View -->
+        <div id="results-page" class="view">
+            <div id="results-content">
+                <div class="card results-summary">
+                    <h2>Your Resilience Score</h2>
+                    <div id="results-layer">Layer Name</div>
+                    <div id="results-risk">Risk Level</div>
+                    <p id="results-description" style="margin-top: 1rem;"></p>
+                    <p id="contextual-note" style="font-style: italic; color: var(--dark-color); font-weight: 500;"></p>
+                </div>
+                <div class="card category-breakdown">
+                    <h3>Category Performance</h3>
+                    <div id="category-scores-container"></div>
+                </div>
+                <div class="card threats-section">
+                    <h3>Potential Threats for Your Layer</h3>
+                    <ul id="threats-list" class="threats-list"></ul>
+                </div>
+                <div class="card recommendations-section">
+                    <h3>Personalized Recommendations</h3>
+                    <div id="recommendations-container"></div>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button id="export-pdf-btn" class="btn btn-primary">Export to PDF</button>
+                <button id="retake-assessment-btn" class="btn btn-secondary">Retake Assessment</button>
+                <button id="home-btn" class="btn btn-secondary">Go to Home</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom JavaScript Files -->
+    <script src="js/questions.js" defer></script>
+    <script src="js/scoring.js" defer></script>
+    <script src="js/recommendations.js" defer></script>
+    <script src="js/storage.js" defer></script>
+    <script src="js/export.js" defer></script>
+    <script src="js/app.js" defer></script>
+</body>
+</html>
