@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentQuestionIndex = 0;
     let answers = {};
     let organizationContext = [];
+    let categories = [...new Set(questions.map(q => q.category))]; // Get unique categories
 
     // DOM Elements
     const views = {
@@ -28,6 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const contextSection = document.getElementById('context-section');
     const contextOptionsContainer = document.getElementById('context-options-container');
     const errorMessageEl = document.getElementById('error-message');
+    const assessmentAreasList = document.getElementById('assessment-areas-list');
+    const sidebarCategoryList = document.getElementById('sidebar-category-list');
 
     // --- Initialization ---
     function init() {
@@ -47,7 +50,44 @@ document.addEventListener('DOMContentLoaded', () => {
         homeBtn.addEventListener('click', () => showView('landing'));
 
         populateContextOptions();
-        showView('landing'); // Start on landing page
+        populateAssessmentAreas();
+        populateSidebar();
+        showView('landing');
+    }
+
+    // --- UI Population ---
+    function populateAssessmentAreas() {
+        assessmentAreasList.innerHTML = '';
+        categories.forEach(category => {
+            const li = document.createElement('li');
+            li.textContent = category;
+            assessmentAreasList.appendChild(li);
+        });
+    }
+
+    function populateSidebar() {
+        sidebarCategoryList.innerHTML = '';
+        categories.forEach(category => {
+            const li = document.createElement('li');
+            li.textContent = category;
+            li.dataset.category = category; // Add data attribute for easy selection
+            li.addEventListener('click', () => {
+                // Find the first question of this category and jump to it
+                const firstQuestionIndex = questions.findIndex(q => q.category === category);
+                if (firstQuestionIndex !== -1) {
+                    currentQuestionIndex = firstQuestionIndex;
+                    showQuestion();
+                }
+            });
+            sidebarCategoryList.appendChild(li);
+        });
+    }
+
+    function updateSidebar() {
+        const currentCategory = questions[currentQuestionIndex].category;
+        document.querySelectorAll('#sidebar-category-list li').forEach(li => {
+            li.classList.toggle('active', li.dataset.category === currentCategory);
+        });
     }
 
     // --- Navigation ---
@@ -84,7 +124,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const label = document.createElement('label');
             label.className = 'context-option';
             label.textContent = context.charAt(0).toUpperCase() + context.slice(1);
-
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
             checkbox.value = context;
@@ -92,7 +131,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 label.classList.toggle('selected', checkbox.checked);
                 updateOrganizationContext();
             });
-
             label.prepend(checkbox);
             contextOptionsContainer.appendChild(label);
         });
@@ -114,28 +152,22 @@ document.addEventListener('DOMContentLoaded', () => {
             const optionId = `q${question.id}_o${index}`;
             const optionEl = document.createElement('div');
             optionEl.className = 'option';
-
             const radio = document.createElement('input');
             radio.type = 'radio';
             radio.name = `q_${question.id}`;
             radio.id = optionId;
             radio.value = index;
-
             const label = document.createElement('label');
             label.htmlFor = optionId;
             label.textContent = option.text;
-
             optionEl.appendChild(radio);
             optionEl.appendChild(label);
             optionsContainer.appendChild(optionEl);
-
-            radio.addEventListener('change', () => {
-                handleOptionSelect(question.id, option);
-            });
+            radio.addEventListener('change', () => handleOptionSelect(question.id, option));
         });
 
         contextSection.style.display = currentQuestionIndex === 0 ? 'block' : 'none';
-        if(currentQuestionIndex === 0) {
+        if (currentQuestionIndex === 0) {
             contextOptionsContainer.querySelectorAll('input').forEach(cb => {
                 cb.checked = organizationContext.includes(cb.value);
                 cb.parentElement.classList.toggle('selected', cb.checked);
@@ -145,6 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateProgress();
         updateNavigation();
         highlightSelectedOption();
+        updateSidebar();
     }
 
     function handleOptionSelect(questionId, optionData) {
@@ -156,7 +189,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function highlightSelectedOption() {
         const question = questions[currentQuestionIndex];
         const selectedAnswer = answers[question.id];
-
         document.querySelectorAll('.option').forEach((optionEl, index) => {
             const isSelected = selectedAnswer && selectedAnswer.text === question.options[index].text;
             optionEl.classList.toggle('selected', isSelected);
@@ -170,7 +202,6 @@ document.addEventListener('DOMContentLoaded', () => {
             errorMessageEl.style.display = 'block';
             return;
         }
-
         if (currentQuestionIndex < questions.length - 1) {
             currentQuestionIndex++;
             showQuestion();
@@ -186,9 +217,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function saveAndExit() {
         const dataToSave = {
-            userId: 'user-' + Date.now(),
-            startDate: new Date().toISOString(),
-            lastUpdated: new Date().toISOString(),
             currentQuestion: currentQuestionIndex,
             answers: answers,
             organizationContext: organizationContext,
@@ -201,7 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             saveBtnRef.textContent = originalText;
             const savedData = loadData();
-             if (savedData && savedData.answers && Object.keys(savedData.answers).length > 0 && !savedData.completed) {
+            if (savedData && savedData.answers && Object.keys(savedData.answers).length > 0 && !savedData.completed) {
                 resumeBtn.style.display = 'inline-block';
             }
             showView('landing');
@@ -214,29 +242,18 @@ document.addEventListener('DOMContentLoaded', () => {
             errorMessageEl.style.display = 'block';
             return;
         }
-
         const scoreData = calculateScores(answers);
         let layerResult = calculateLayer(scoreData);
         layerResult = applyContextualRisk(layerResult, organizationContext);
-
         const recommendations = generateRecommendations(answers);
-
-        const results = {
-            ...scoreData,
-            layer: layerResult,
-            recommendations,
-        };
-
+        const results = { ...scoreData, layer: layerResult, recommendations };
         const dataToSave = {
             ...loadData(),
-            lastUpdated: new Date().toISOString(),
-            currentQuestion: currentQuestionIndex,
             answers: answers,
             organizationContext: organizationContext,
             completed: true,
             results: results
         };
-
         saveData(dataToSave);
         displayResults(results);
         showView('results');
@@ -258,10 +275,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Results Display ---
     function displayResults(results) {
         const { layer, categoryScores, recommendations } = results;
-
-        // Summary
         const summaryEl = document.querySelector('.results-summary');
-        summaryEl.style.backgroundColor = layer.color.replace('var(','').replace(')','');
+        summaryEl.style.backgroundColor = layer.color.replace('var(', '').replace(')', '');
         summaryEl.style.color = 'var(--dark-color)';
         document.getElementById('results-layer').textContent = layer.layer;
         const riskEl = document.getElementById('results-risk');
@@ -269,7 +284,6 @@ document.addEventListener('DOMContentLoaded', () => {
         riskEl.style.backgroundColor = 'rgba(0,0,0,0.2)';
         riskEl.style.color = '#fff';
         document.getElementById('results-description').textContent = layer.description;
-
         const contextualNoteEl = document.getElementById('contextual-note');
         if (layer.contextualNote) {
             contextualNoteEl.textContent = layer.contextualNote;
@@ -277,15 +291,11 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             contextualNoteEl.style.display = 'none';
         }
-
-
-        // Category Scores
         const categoryContainer = document.getElementById('category-scores-container');
         categoryContainer.innerHTML = '';
         for (const category in categoryScores) {
             const scoreData = categoryScores[category];
             const percentage = scoreData.maxScore > 0 ? (scoreData.score / scoreData.maxScore) * 100 : 0;
-
             const scoreEl = document.createElement('div');
             scoreEl.className = 'category-score';
             scoreEl.innerHTML = `
@@ -297,8 +307,6 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             categoryContainer.appendChild(scoreEl);
         }
-
-        // Threats
         const threatsList = document.getElementById('threats-list');
         threatsList.innerHTML = '';
         layer.threats.forEach(threat => {
@@ -306,24 +314,19 @@ document.addEventListener('DOMContentLoaded', () => {
             li.textContent = threat;
             threatsList.appendChild(li);
         });
-
-        // Recommendations
         const recContainer = document.getElementById('recommendations-container');
         recContainer.innerHTML = '';
-
         const recSections = {
             "Immediate Actions (0-30 days)": recommendations.immediate,
             "Short-term Goals (1-3 months)": recommendations.shortTerm,
             "Long-term Objectives (3-12 months)": recommendations.longTerm
         };
-
         for (const title in recSections) {
             if (recSections[title].length > 0) {
                 const sectionEl = document.createElement('div');
                 sectionEl.innerHTML = `<h3>${title}</h3>`;
                 const listEl = document.createElement('ul');
                 listEl.className = 'recommendations-list';
-
                 recSections[title].forEach(rec => {
                     const li = document.createElement('li');
                     li.className = 'recommendation-item';
@@ -334,7 +337,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                     listEl.appendChild(li);
                 });
-
                 sectionEl.appendChild(listEl);
                 recContainer.appendChild(sectionEl);
             }
